@@ -2,3 +2,50 @@
 title: "Simple document"
 output: github_document
 ---
+
+This file is for doing data import 
+
+```{r}
+library(tidyverse)
+```
+
+Import our first dataset.
+
+```{r}
+# always use relative paths
+
+litters_df =
+  read_csv(file = "data/FAS_litters.csv")
+
+# data file uses both NA and . for missing values - we will look at this later
+
+# cleaning out spaces from column names
+litters_df = janitor::clean_names(litters_df)
+```
+
+Importing second dataset.
+```{r}
+pups_df = 
+    read_csv("data/FAS_pups.csv", skip = 3)
+
+pups_df = janitor::clean_names(pups_df)
+```
+
+## Look at the data
+```{r}
+head(litters_df, 10)
+tail(pups_df, 5)
+```
+
+Skimming??
+```{r}
+skimr::skim(pups_df)
+```
+
+
+
+
+
+
+
+
