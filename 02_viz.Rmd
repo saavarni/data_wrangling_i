@@ -1,11 +1,11 @@
 ---
-title: "02_viz"
+title: "Visualization"
 output: github_document
-date: "2026-10-06"
 ---
 
 ```{r}
 library(tidyverse)
+library(patchwork)
 library(p8105.datasets)
 
 data("weather_df")
@@ -54,6 +54,7 @@ weather_df |>
 
 Let's look at color!!!
 
+
 ```{r}
 weather_df |> 
   ggplot(aes(x = tmax, y = tmin, color = name)) + 
@@ -72,28 +73,101 @@ weather_df |>
   )
 ```
 
+
 ## Themes
 
 ```{r}
 weather_df |> 
-  ggplot(aes(x = tmax, y = tmin, color = name)) + 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
   geom_point() +
   viridis::scale_color_viridis(
     name = "Location",
     discrete = TRUE
   ) + 
-  theme_classic() +
+  theme(legend.position = "bottom")
+```
+
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point() +
+  viridis::scale_color_viridis(
+    name = "Location",
+    discrete = TRUE
+  ) + 
+  theme_classic() + 
+  theme(legend.position = "bottom")
+```
+
+
+Update the tmax vs date plot.
+
+```{r}
+weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE) + 
+  labs(
+    title = "Seasonal trends in Max Temp", 
+    x = "Date", 
+    y = "Max Temp",
+    caption = "Max daily temp in three weather stations in 2021 and 2020",
+    color = "Location"
+  ) +
+  viridis::scale_color_viridis(
+    discrete = TRUE
+  ) + 
+  theme_minimal() +
+  theme(legend.position = "bottom") 
+```
+
+
+
+
+## Two more weird but useful plot things
+
+```{r}
+central_park_df = 
+  weather_df |> 
+  filter(name == "CentralPark_NY")
+
+molokai_df = 
+  weather_df |> 
+  filter(name == "Molokai_HI")
+
+ggplot(molokai_df, aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
+  geom_line(data = central_park_df)
+```
+
+
+
+multiple panels with different plot types.
+
+```{r}
+ggp_tmax_tmin = 
+  weather_df |> 
+  ggplot(aes(x = tmin, y = tmax, color = name)) + 
+  geom_point() + 
+  theme(legend.position = "none")
+
+ggp_prcp_density = 
+  weather_df |> 
+  filter(prcp > 0) |> 
+  ggplot(aes(x = prcp, fill = name)) + 
+  geom_density(alpha = .5) + 
+  theme(legend.position = "none")
+
+ggp_seasonal =
+  weather_df |> 
+  ggplot(aes(x = date, y = tmax, color = name)) + 
+  geom_point() + 
   theme(legend.position = "bottom")
 
-# theme minimal overrides everthing prior
-```
-
-Update the tmax vs date plot. 
-```{r}
+(ggp_tmax_tmin + ggp_prcp_density) / ggp_seasonal
 
 ```
-
-
 
 
 
